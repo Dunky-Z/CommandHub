@@ -12,6 +12,7 @@ import FileSystemProvider from './FileSystemProvider';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Command } from '../type/common';
+import { registerCommand } from './registry';
 
 export class CommandExplorer {
     private commandExplorer?: vscode.TreeView<Entry>;
@@ -27,28 +28,28 @@ export class CommandExplorer {
                 treeDataProvider,
                 dragAndDropController: treeDataProvider as any // 使用 as any 解决类型问题
             });
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.openFile`, (resource) => this.openResource(resource)));
+            
+            registerCommand(`${viewId}.openFile`, (resource: vscode.Uri) => this.openResource(resource), context);
 
             this.commandExplorer.onDidChangeSelection(event => this.selectedFile = event.selection[0]);
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.add`, () => treeDataProvider.add(this.selectedFile)));
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.addFolder`, () => treeDataProvider.addFolder(this.selectedFile)));
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.sync`, () => treeDataProvider.refresh()));
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.edit`, (element) => treeDataProvider.edit(element)));
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.editLabel`, (element) => treeDataProvider.editLabel(element)));
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.editFolder`, (element) => treeDataProvider.edit(element)));
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.delete`, (element) => {
-                    treeDataProvider.delete(element.uri, {recursive: true});
-                    // 删除后就清除选中 否则会新增文件夹时用回这个已经删除的目录去新增子目录
-                    this.selectedFile = undefined;
-                }
-            ));
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.copy`, (element) => treeDataProvider.copyCommand(element)));
+            registerCommand(`${viewId}.add`, () => treeDataProvider.add(this.selectedFile), context);
+            registerCommand(`${viewId}.addFolder`, () => treeDataProvider.addFolder(this.selectedFile), context);
+            registerCommand(`${viewId}.sync`, () => treeDataProvider.refresh(), context);
+            registerCommand(`${viewId}.edit`, (element: Entry) => treeDataProvider.edit(element), context);
+            registerCommand(`${viewId}.editLabel`, (element: Entry) => treeDataProvider.editLabel(element), context);
+            registerCommand(`${viewId}.editFolder`, (element: Entry) => treeDataProvider.edit(element), context);
+            registerCommand(`${viewId}.delete`, (element: Entry) => {
+                treeDataProvider.delete(element.uri, {recursive: true});
+                // 删除后就清除选中 否则会新增文件夹时用回这个已经删除的目录去新增子目录
+                this.selectedFile = undefined;
+            }, context);
+            registerCommand(`${viewId}.copy`, (element: Entry) => treeDataProvider.copyCommand(element), context);
             
             // 添加导出命令注册
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.export`, () => this.exportCommands(treeDataProvider)));
+            registerCommand(`${viewId}.export`, () => this.exportCommands(treeDataProvider), context);
             
             // 添加导入命令注册
-            context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.import`, () => this.importCommands(treeDataProvider)));
+            registerCommand(`${viewId}.import`, () => this.importCommands(treeDataProvider), context);
         });
     }
 

@@ -8,7 +8,7 @@
     "name": "Zhang Dongdong",
     "email": "zh254758318@gmail.com"
   },
-  "icon": "resources/extIcon.svg",
+  "icon": "resources/extIcon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/dengzhifeng/commandTool"
@@ -336,7 +336,7 @@
     "viewsWelcome": [
       {
         "view": "SideBar-Command",
-        "contents": "提高你的效率，释放你的双手～"
+        "contents": "暂未检索到项目命令"
       }
     ],
     "configuration": {

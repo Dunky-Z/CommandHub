@@ -1,8 +1,4 @@
 # CommandTool
-[![MarketPlace](https://vsmarketplacebadge.apphb.com/version/stevendeng.commandTool.svg)](https://marketplace.visualstudio.com/items?itemName=stevendeng.commandTool)
-[![Installs](https://vsmarketplacebadge.apphb.com/installs-short/stevendeng.commandTool.svg)](https://marketplace.visualstudio.com/items?itemName=stevendeng.commandTool)
-[![author](https://img.shields.io/badge/author-@stevendeng-green.svg)](https://marketplace.visualstudio.com/items?itemName=stevendeng.commandTool)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://marketplace.visualstudio.com/items/stevendeng.commandTool/license)
 
 
 This is an extension to quickly execute project commands, which can be run with the click of a button. It also supports custom project commands, global project commands, and one-click run commands. Solve the pain point that everyone can't remember the command, and you can run the command with the click of the mouse. At the same time, the copy command is supported, which can be copied to other terminals for running.
