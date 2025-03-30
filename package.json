@@ -311,7 +311,7 @@
         {
           "id": "command-list-view",
           "title": "CommandHub",
-          "icon": "resources/extIcon.svg"
+          "icon": "resources/extIcon.png"
         }
       ]
     },
