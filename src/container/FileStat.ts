@@ -1,10 +1,3 @@
-/*
- * @description: 文件类
- * @author: steven.deng
- * @Date: 2022-02-28 07:44:38
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-02-28 07:50:26
- */
 import * as vscode from "vscode";
 import * as fs from 'fs';
 

@@ -1,10 +1,3 @@
-/*
- * @description: container容器r入口
- * @author: steven.deng
- * @Date: 2022-01-31 17:38:29
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-04-05 14:14:57
- */
 import * as vscode from 'vscode';
 import { ShellType } from '../type/common';
 import { copyToClipboard, getWorkSpaceFolders } from '../utils';
@@ -46,11 +39,15 @@ export default function(context: vscode.ExtensionContext) {
         new CommandExecuter('workSpaceCommandExecuter', context);
     }
 
-    // 全局命令
+    // 全局命令 - 确保只初始化一次
     const globalStoragePath = context.globalStorageUri ? context.globalStorageUri.fsPath : context.globalStoragePath || './';
     console.log('Global storage path:', globalStoragePath);
-    new CommandExplorer('Global-Command', globalStoragePath, context);
-    new CommandExecuter('globalCommandExecuter', context);
+    
+    // 检查是否已经注册了Global-Command视图
+    if (!vscode.window.registerTreeDataProvider.toString().includes('Global-Command')) {
+        new CommandExplorer('Global-Command', globalStoragePath, context);
+        new CommandExecuter('globalCommandExecuter', context);
+    }
 };
 
 // 初始化本地项目命令

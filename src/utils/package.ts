@@ -1,11 +1,3 @@
-/*
- * @description: 包文件工具类
- * @author: steven.deng
- * @Date: 2022-02-09 07:24:02
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-02-13 10:01:16
- */
-
 import { getPathHack } from ".";
 import * as fs from 'fs';
 import { ShellType } from "../type/common";

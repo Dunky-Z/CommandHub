@@ -1,10 +1,3 @@
-/*
- * @description: 命令集合侧边栏实例
- * @author: steven.deng
- * @Date: 2022-01-31 17:38:46
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-03-16 07:29:19
- */
 import * as vscode from 'vscode';
 import { PREFIX } from '../constants';
 import { FolderType, ShellType } from '../type/common';
@@ -58,7 +51,7 @@ export default class SideBarCommand extends SideBarEntryListImplements {
             }
             return childElement;
         } else {
-            const itemCollapsibleState: boolean = vscode.workspace.getConfiguration().get('commandTool.TreeItemCollapsibleState') || false;
+            const itemCollapsibleState: boolean = vscode.workspace.getConfiguration().get('CommandHub.TreeItemCollapsibleState') || false;
             // 根命令目录是否折叠
             const treeItemCollapsibleState: number = itemCollapsibleState ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.Expanded;
             

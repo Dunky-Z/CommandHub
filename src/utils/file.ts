@@ -1,14 +1,8 @@
-/*
- * @description: 文件工具类
- * @author: steven.deng
- * @Date: 2022-02-23 07:04:58
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-03-24 21:48:17
- */
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as mkdirp from 'mkdirp';
-import * as rimraf from 'rimraf';
+// 使用require代替import
+const mkdirp = require('mkdirp');
+const rimraf = require('rimraf');
 
 export namespace _ {
     function handleResult<T>(
@@ -51,7 +45,13 @@ export namespace _ {
     // 创建目录
     export function mkdir(path: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            mkdirp(path, error => handleResult(resolve, reject, error, void 0));
+            mkdirp(path, (err: Error | null) => {
+                if (err) {
+                    reject(messageError(err));
+                } else {
+                    resolve();
+                }
+            });
         });
     }
 
@@ -87,9 +87,13 @@ export namespace _ {
 
     export function rmrf(path: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            rimraf(path, (error) =>
-                handleResult(resolve, reject, error, void 0)
-            );
+            rimraf(path, (err: Error | null) => {
+                if (err) {
+                    reject(messageError(err));
+                } else {
+                    resolve();
+                }
+            });
         });
     }
     export function unlink(path: string): Promise<void> {

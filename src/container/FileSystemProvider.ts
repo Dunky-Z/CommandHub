@@ -1,11 +1,3 @@
-/*
- * @description: 文件目录处理的provider
- * @author: steven.deng
- * @Date: 2022-02-24 07:16:17
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-04-08 14:26:56
- */
-
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -18,7 +10,7 @@ import { Command, Entry } from '../type/common';
 const sanitizeFilename = require('sanitize-filename');
 
 export default class FileSystemProvider
-    implements vscode.TreeDataProvider<Entry>, vscode.FileSystemProvider
+    implements vscode.TreeDataProvider<Entry>, vscode.FileSystemProvider, vscode.TreeDragAndDropController<Entry>
 {
     // 创建目录树的事件发射器
     private _onDidChangeTreeData: vscode.EventEmitter<Entry | undefined> =
@@ -35,12 +27,73 @@ export default class FileSystemProvider
     // 将rootUri改为公开属性，以便 CommandExplorer 可以访问
     public rootUri: vscode.Uri;
 
+    // 自定义排序映射
+    private sortOrderMap: Map<string, string[]> = new Map();
+
     constructor(viewId: string, rootPath: string) {
         this.rootUri = vscode.Uri.file(rootPath);
         console.log('this.rootUri:', this.rootUri);
         this.viewId = viewId;
         this.watch(this.rootUri, { recursive: true, excludes: ['.json'] });
+        
+        // 初始化排序信息
+        this.loadSortOrders();
     }
+    
+    // 加载所有文件夹的排序信息
+    private async loadSortOrders(): Promise<void> {
+        try {
+            await this.loadFolderSortOrder(this.rootUri.fsPath);
+        } catch (e) {
+            console.error('加载排序信息失败:', e);
+        }
+    }
+    
+    // 递归加载文件夹排序信息
+    private async loadFolderSortOrder(folderPath: string): Promise<void> {
+        // 先加载当前文件夹的排序
+        const orderFilePath = path.join(folderPath, '.order');
+        if (await _.exists(orderFilePath)) {
+            try {
+                const content = await _.readfile(orderFilePath);
+                const order = JSON.parse(content.toString());
+                if (Array.isArray(order)) {
+                    this.sortOrderMap.set(folderPath, order);
+                }
+            } catch (e) {
+                console.error(`读取排序文件失败: ${orderFilePath}`, e);
+            }
+        }
+        
+        // 递归处理子文件夹
+        try {
+            const entries = await _.readdir(folderPath);
+            for (const entry of entries) {
+                const entryPath = path.join(folderPath, entry);
+                const stat = await _.stat(entryPath);
+                if (stat.isDirectory()) {
+                    await this.loadFolderSortOrder(entryPath);
+                }
+            }
+        } catch (e) {
+            console.error(`读取目录失败: ${folderPath}`, e);
+        }
+    }
+    
+    // 保存排序信息
+    private async saveSortOrder(folderPath: string, items: string[]): Promise<void> {
+        try {
+            const orderFilePath = path.join(folderPath, '.order');
+            await _.writefile(orderFilePath, Buffer.from(JSON.stringify(items)));
+            // 更新内存中的排序映射
+            this.sortOrderMap.set(folderPath, items);
+            console.log('saveSortOrder:', items);
+            console.log('folderPath:', folderPath);
+        } catch (e) {
+            console.error(`保存排序信息失败: ${folderPath}`, e);
+        }
+    }
+    
     async add(selected?: Entry) {
         const script = await vscode.window.showInputBox({
             placeHolder: `E.g.: npm run dev`,
@@ -212,6 +265,12 @@ export default class FileSystemProvider
         return path.slice(path.lastIndexOf('/') + 1);
     }
     delete(uri: vscode.Uri, options: { recursive: boolean }): Thenable<void> {
+        const parentDir = this.getDirectoryPath(uri.fsPath);
+        const fileName = this.getFileName(uri.fsPath);
+        
+        // 删除前更新排序信息
+        this.updateSortOrderOnDelete(parentDir, fileName);
+        
         if (options.recursive) {
             return _.rmrf(uri.fsPath);
         }
@@ -230,20 +289,84 @@ export default class FileSystemProvider
         newUri: vscode.Uri,
         options: { overwrite: boolean }
     ): Promise<void> {
+        const oldParentDir = this.getDirectoryPath(oldUri.fsPath);
+        const newParentDir = this.getDirectoryPath(newUri.fsPath);
+        const oldFileName = this.getFileName(oldUri.fsPath);
+        const newFileName = this.getFileName(newUri.fsPath);
+        
         const exists = await _.exists(newUri.fsPath);
         if (exists) {
             if (!options.overwrite) {
                 throw vscode.FileSystemError.FileExists();
             } else {
                 await _.rmrf(newUri.fsPath);
+                // 目标存在且被覆盖时，从目标排序中移除
+                await this.updateSortOrderOnDelete(newParentDir, newFileName);
             }
         }
+        
         const parentExists = await _.exists(path.dirname(newUri.fsPath));
         if (!parentExists) {
             await _.mkdir(path.dirname(newUri.fsPath));
         }
-        return _.rename(oldUri.fsPath, newUri.fsPath);
+        
+        // 执行重命名/移动
+        await _.rename(oldUri.fsPath, newUri.fsPath);
+        
+        // 重命名/移动后更新排序
+        await this.updateSortOrderOnRename(oldParentDir, oldFileName, newParentDir, newFileName);
+        
+        // 刷新视图
+        this.refresh();
     }
+    
+    // 重命名/移动后更新排序信息
+    private async updateSortOrderOnRename(oldParentDir: string, oldFileName: string, 
+                                         newParentDir: string, newFileName: string): Promise<void> {
+        // 从源目录排序中移除
+        if (this.sortOrderMap.has(oldParentDir)) {
+            const sourceOrder = this.sortOrderMap.get(oldParentDir) || [];
+            const newSourceOrder = sourceOrder.filter(name => name !== oldFileName);
+            await this.saveSortOrder(oldParentDir, newSourceOrder);
+        }
+        
+        // 如果是移动到其他目录
+        if (oldParentDir !== newParentDir) {
+            // 获取目标目录下所有项目
+            const entries = await this.readDirectory(vscode.Uri.file(newParentDir));
+            let items = entries.map(entry => entry[0]);
+            
+            // 确保新文件名在排序列表中
+            if (!items.includes(newFileName)) {
+                items.push(newFileName);
+                await this.saveSortOrder(newParentDir, items);
+            }
+        } 
+        // 如果是重命名但仍在同一目录
+        else if (oldFileName !== newFileName) {
+            const order = this.sortOrderMap.get(oldParentDir) || [];
+            const index = order.indexOf(oldFileName);
+            if (index !== -1) {
+                // 替换旧名称为新名称
+                order[index] = newFileName;
+                await this.saveSortOrder(oldParentDir, order);
+            } else {
+                // 如果旧名称不在列表中，添加新名称到末尾
+                order.push(newFileName);
+                await this.saveSortOrder(oldParentDir, order);
+            }
+        }
+    }
+    
+    // 在删除项目时更新排序信息
+    private async updateSortOrderOnDelete(parentDir: string, fileName: string): Promise<void> {
+        if (this.sortOrderMap.has(parentDir)) {
+            const order = this.sortOrderMap.get(parentDir) || [];
+            const newOrder = order.filter(name => name !== fileName);
+            await this.saveSortOrder(parentDir, newOrder);
+        }
+    }
+    
     readFile(uri: vscode.Uri): Promise<Uint8Array> {
         return _.readfile(uri.fsPath);
     }
@@ -285,14 +408,50 @@ export default class FileSystemProvider
             return [];
         }
         const children = await this.readDirectory(uri);
-        children.sort((a, b) => {
-            if (a[1] === b[1]) {
-                return a[0].localeCompare(b[0]);
-            }
-            return a[1] === vscode.FileType.Directory ? -1 : 1;
-        });
+        
+        // 检查是否有自定义排序
+        const folderPath = uri.fsPath;
+        const customOrder = this.sortOrderMap.get(folderPath);
+        
+        if (customOrder && customOrder.length > 0) {
+            // 使用自定义排序
+            children.sort((a, b) => {
+                const aName = a[0];
+                const bName = b[0];
+                const aIndex = customOrder.indexOf(aName);
+                const bIndex = customOrder.indexOf(bName);
+                
+                // 如果两者都在排序列表中，根据列表顺序排序
+                if (aIndex !== -1 && bIndex !== -1) {
+                    return aIndex - bIndex;
+                }
+                
+                // 只有一个在排序列表中，排序列表中的项目优先
+                if (aIndex !== -1) return -1;
+                if (bIndex !== -1) return 1;
+                
+                // 都不在排序列表中，按默认规则排序
+                if (a[1] === b[1]) {
+                    return a[0].localeCompare(b[0]);
+                }
+                return a[1] === vscode.FileType.Directory ? -1 : 1;
+            });
+        } else {
+            // 默认排序：文件夹在前，同类型按名称排序
+            children.sort((a, b) => {
+                if (a[1] === b[1]) {
+                    return a[0].localeCompare(b[0]);
+                }
+                return a[1] === vscode.FileType.Directory ? -1 : 1;
+            });
+        }
+        
         return children
             .filter(([name, type]) => {
+                // 过滤掉隐藏文件，如.order文件
+                if (name.startsWith('.')) {
+                    return false;
+                }
                 return this.isJson(name) || type === vscode.FileType.Directory;
             })
             .map(([name, type]) => {
@@ -349,5 +508,153 @@ export default class FileSystemProvider
             return false;
         }
         return path.length - index === 5;
+    }
+    
+    // 声明拖放处理器的接受类型
+    public readonly dropMimeTypes = ['application/vnd.code.tree.CommandHub'];
+    public readonly dragMimeTypes = ['application/vnd.code.tree.CommandHub'];
+    
+    // 处理拖动操作开始
+    public handleDrag(source: readonly Entry[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void {
+        console.log('开始拖动操作', source);
+        
+        // 使用字符串而不是对象，避免序列化问题
+        const sourcePaths = source.map(entry => ({
+            uri: entry.uri.toString(),
+            type: entry.type
+        }));
+        
+        // 使用简单的JSON字符串存储
+        dataTransfer.set('application/vnd.code.tree.CommandHub', new vscode.DataTransferItem(JSON.stringify(sourcePaths)));
+    }
+    
+    // 处理放置操作
+    public async handleDrop(target: Entry | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): Promise<void> {
+        console.log('处理放置操作', target ? target.uri.fsPath : 'root');
+        
+        const transferItem = dataTransfer.get('application/vnd.code.tree.CommandHub');
+        if (!transferItem) {
+            console.log('没有找到传输项');
+            return;
+        }
+        
+        try {
+            // 从JSON字符串恢复
+            const sourcePaths = JSON.parse(transferItem.value as string);
+            console.log('解析传输项内容', sourcePaths);
+            
+            if (!sourcePaths || sourcePaths.length === 0 || token.isCancellationRequested) {
+                console.log('源为空或操作已取消');
+                return;
+            }
+            
+            // 重新构建Entry对象
+            const sources: Entry[] = sourcePaths.map((item: any) => ({
+                uri: vscode.Uri.parse(item.uri),
+                type: item.type
+            }));
+            
+            await this.handleFileSystemDrop(sources, target);
+            
+            // 刷新视图以显示变更
+            this.refresh();
+        } catch (e) {
+            console.error('拖放错误:', e);
+            vscode.window.showErrorMessage(`拖放操作失败: ${e}`);
+        }
+    }
+    
+    // 处理文件系统拖放操作
+    private async handleFileSystemDrop(sources: Entry[], target: Entry | undefined): Promise<void> {
+        console.log('处理文件系统拖放:', sources, target ? target.uri.fsPath : 'root');
+        
+        // 确定目标目录
+        const targetDir = !target ? this.rootUri.fsPath : 
+                         target.type === vscode.FileType.Directory ? target.uri.fsPath : 
+                         this.getDirectoryPath(target.uri.fsPath);
+                         
+        // 先收集当前目录下所有项目的名称
+        const currentEntries = await this.readDirectory(vscode.Uri.file(targetDir));
+        let currentOrder = currentEntries.map(entry => entry[0])
+                                        .filter(name => !name.startsWith('.'));
+        
+        // 创建新的排序列表
+        let newOrder: string[] = [...currentOrder]; // 复制当前排序
+        
+        for (const source of sources) {
+            // 跳过无效的拖拽操作
+            if (!source.uri) {
+                continue;
+            }
+            
+            // 确定来源目录
+            const sourceDir = this.getDirectoryPath(source.uri.fsPath);
+            const fileName = this.getFileName(source.uri.fsPath);
+            
+            // 构建新路径
+            const newPath = path.join(targetDir, fileName);
+            
+            // 如果不是同一个目录，处理移动操作
+            if (sourceDir !== targetDir) {
+                // 跳过拖到自己的情况
+                if (source.uri.fsPath === newPath) {
+                    continue;
+                }
+                
+                // 如果目标路径已存在，请求用户确认
+                if (await _.exists(newPath)) {
+                    const response = await vscode.window.showWarningMessage(
+                        `目标位置已存在 "${fileName}"，是否覆盖?`,
+                        '覆盖',
+                        '取消'
+                    );
+                    
+                    if (response !== '覆盖') {
+                        continue;
+                    }
+                    // 如果是覆盖，先删除目标
+                    await this.delete(vscode.Uri.file(newPath), { recursive: true });
+                }
+                
+                // 移动文件或目录
+                await this.rename(source.uri, vscode.Uri.file(newPath), { overwrite: true });
+                
+                // 添加到新目录的排序列表末尾
+                if (!newOrder.includes(fileName)) {
+                    newOrder.push(fileName);
+                }
+            } 
+            else if (target && target.type === vscode.FileType.File) {
+                // 同一目录内的排序情况 - 将源文件移动到目标文件位置
+                const targetFileName = this.getFileName(target.uri.fsPath);
+                
+                // 如果源文件和目标文件相同，跳过
+                if (fileName === targetFileName) {
+                    continue;
+                }
+                
+                // 从新排序中移除源文件
+                newOrder = newOrder.filter(name => name !== fileName);
+                
+                // 找到目标文件位置
+                const targetIndex = newOrder.indexOf(targetFileName);
+                if (targetIndex !== -1) {
+                    // 插入源文件到目标文件位置
+                    newOrder.splice(targetIndex, 0, fileName);
+                } else {
+                    // 如果找不到目标文件，添加到末尾
+                    newOrder.push(fileName);
+                }
+                
+                console.log('排序更新:', fileName, '移到', targetFileName, '之前');
+                console.log('新排序:', newOrder);
+            }
+        }
+        
+        // 保存新的排序信息
+        await this.saveSortOrder(targetDir, newOrder);
+        
+        // 强制刷新视图
+        setTimeout(() => this.refresh(), 100);
     }
 }

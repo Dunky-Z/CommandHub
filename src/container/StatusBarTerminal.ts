@@ -1,10 +1,3 @@
-/*
- * @description: 终端类
- * @author: steven.deng
- * @Date: 2022-01-31 17:39:04
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-02-18 07:32:11
- */
 import * as vscode from 'vscode';
 import { MyTerminalOptions } from '../type/common';
 

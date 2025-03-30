@@ -1,10 +1,3 @@
-/*
- * @description: 工具函数
- * @author: steven.deng
- * @Date: 2022-01-31 17:52:13
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-04-05 11:02:37
- */
 import * as vscode from 'vscode';
 import { FolderType } from '../type/common';
 import * as os from 'os';

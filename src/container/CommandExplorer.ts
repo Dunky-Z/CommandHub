@@ -23,7 +23,10 @@ export class CommandExplorer {
             // 创建文件树对象
             const treeDataProvider = new FileSystemProvider(viewId, storagePath);
             // 创建目录树
-            this.commandExplorer = vscode.window.createTreeView(viewId, { treeDataProvider });
+            this.commandExplorer = vscode.window.createTreeView(viewId, { 
+                treeDataProvider,
+                dragAndDropController: treeDataProvider as any // 使用 as any 解决类型问题
+            });
             context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.openFile`, (resource) => this.openResource(resource)));
 
             this.commandExplorer.onDidChangeSelection(event => this.selectedFile = event.selection[0]);

@@ -1,10 +1,3 @@
-/*
- * @description: 类型定义
- * @author: steven.deng
- * @Date: 2022-01-31 17:53:39
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-02-23 07:00:09
- */
 import * as vscode from 'vscode';
 
 // 工程文件类型

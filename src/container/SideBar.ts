@@ -1,10 +1,3 @@
-/*
- * @description: 侧边栏父类
- * @author: steven.deng
- * @Date: 2022-01-31 18:07:56
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-03-16 07:25:02
- */
 import * as vscode from 'vscode';
 import { ShellType } from '../type/common';
 

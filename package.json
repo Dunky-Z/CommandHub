@@ -1,10 +1,14 @@
 {
-  "name": "commandTool",
-  "displayName": "commandTool",
+  "name": "CommandHub",
+  "displayName": "CommandHub",
   "description": "Save and display shell commands like File Explorer",
   "version": "1.0.3",
-  "publisher": "stevendeng",
-  "icon": "resources/extIcon.png",
+  "publisher": "Zhang Dongdong",
+  "author": {
+    "name": "Zhang Dongdong",
+    "email": "zh254758318@gmail.com"
+  },
+  "icon": "resources/extIcon.svg",
   "repository": {
     "type": "git",
     "url": "https://github.com/dengzhifeng/commandTool"
@@ -27,7 +31,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "commandTool.helloWorld",
+        "command": "CommandHub.helloWorld",
         "title": "Hello World"
       },
       {
@@ -306,8 +310,8 @@
       "activitybar": [
         {
           "id": "command-list-view",
-          "title": "command-tool",
-          "icon": "resources/extIcon.png"
+          "title": "CommandHub",
+          "icon": "resources/extIcon.svg"
         }
       ]
     },
@@ -319,11 +323,13 @@
         },
         {
           "id": "WorkSpace-Command",
-          "name": "WorkSpace-Command(工作区命令集)"
+          "name": "WorkSpace-Command(工作区命令集)",
+          "dragAndDropController": true
         },
         {
           "id": "Global-Command",
-          "name": "Global-Command(全局命令集)"
+          "name": "Global-Command(全局命令集)",
+          "dragAndDropController": true
         }
       ]
     },
@@ -334,21 +340,21 @@
       }
     ],
     "configuration": {
-      "title": "commandTool",
+      "title": "CommandHub",
       "properties": {
-        "commandTool.splitTerminal": {
+        "CommandHub.splitTerminal": {
           "type": "boolean",
           "description": "是否支持分割终端，默认支持",
           "default": true,
           "scope": "window"
         },
-        "commandTool.autoRunTerminal": {
+        "CommandHub.autoRunTerminal": {
           "type": "boolean",
           "description": "是否自动运行脚本，默认自动运行",
           "default": true,
           "scope": "window"
         },
-        "commandTool.TreeItemCollapsibleState": {
+        "CommandHub.TreeItemCollapsibleState": {
           "type": "boolean",
           "description": "是否折叠命令列表",
           "default": false,
@@ -377,7 +383,7 @@
     "@types/node": "14.x",
     "@types/rimraf": "^3.0.2",
     "@types/sanitize-filename": "^1.6.3",
-    "@types/vscode": "^1.63.0",
+    "@types/vscode": "^1.84.0",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
     "@vscode/test-electron": "^2.0.3",

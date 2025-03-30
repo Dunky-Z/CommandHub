@@ -1,10 +1,3 @@
-/*
- * @description: 终端共有方法
- * @author: steven.deng
- * @Date: 2022-03-13 11:04:47
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-03-25 07:37:10
- */
 import * as vscode from 'vscode';
 import { MyTerminalOptions, ShellType } from '../type/common';
 import { PREFIX } from '../constants';
@@ -28,9 +21,9 @@ export async function dealTerminal(context: vscode.ExtensionContext, args: { tit
             vscode.window.showErrorMessage(label);
         } else {
             // 获取用户配置是否分割终端设置
-            const splitTerminal = vscode.workspace.getConfiguration().get('commandTool.splitTerminal') || false;
+            const splitTerminal = vscode.workspace.getConfiguration().get('CommandHub.splitTerminal') || false;
             // 获取用户配置的是否自动运行脚本
-            const autoRunTerminal: boolean = vscode.workspace.getConfiguration().get('commandTool.autoRunTerminal') || false;
+            const autoRunTerminal: boolean = vscode.workspace.getConfiguration().get('CommandHub.autoRunTerminal') || false;
 
             // 填充脚本、支持分配、自动运行脚本、多项目终端切换
             // 1.1 获取当前所以运行的终端数量

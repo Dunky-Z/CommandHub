@@ -1,10 +1,3 @@
-/*
- * @description: 
- * @author: steven.deng
- * @Date: 2022-03-13 10:37:28
- * @LastEditors: steven.deng
- * @LastEditTime: 2022-03-13 22:13:09
- */
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { Entry } from '../type/common';
