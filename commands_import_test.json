@@ -1,0 +1,86 @@
+[
+  {
+    "script": "npm run dev",
+    "label": "启动开发服务器"
+  },
+  {
+    "script": "npm run build",
+    "label": "构建项目",
+    "folder": "构建命令"
+  },
+  {
+    "script": "npm run test",
+    "label": "运行测试",
+    "folder": "测试命令"
+  },
+  {
+    "script": "npm run lint",
+    "label": "代码检查",
+    "folder": "开发工具"
+  },
+  {
+    "script": "git add .",
+    "label": "添加所有文件",
+    "folder": "Git命令"
+  },
+  {
+    "script": "git commit -m \"feat: update\"",
+    "label": "提交更新",
+    "folder": "Git命令"
+  },
+  {
+    "script": "git push origin master",
+    "label": "推送到主分支",
+    "folder": "Git命令"
+  },
+  {
+    "script": "docker-compose up -d",
+    "label": "启动Docker容器",
+    "folder": "Docker/基础命令"
+  },
+  {
+    "script": "docker-compose down",
+    "label": "停止Docker容器",
+    "folder": "Docker/基础命令"
+  },
+  {
+    "script": "docker ps",
+    "label": "查看容器状态",
+    "folder": "Docker/监控命令"
+  },
+  {
+    "script": "tar -czvf backup.tar.gz ./dist",
+    "label": "压缩dist目录",
+    "folder": "构建命令/打包"
+  },
+  {
+    "script": "scp backup.tar.gz user@server:/path",
+    "label": "上传到服务器",
+    "folder": "部署/上传"
+  },
+  {
+    "script": "ssh user@server \"cd /path && ./deploy.sh\"",
+    "label": "远程部署",
+    "folder": "部署/远程操作"
+  },
+  {
+    "script": "node scripts/generate-api.js",
+    "label": "生成API代码",
+    "folder": "开发工具/脚本"
+  },
+  {
+    "script": "pm2 start app.js",
+    "label": "PM2启动应用",
+    "folder": "部署/服务管理"
+  },
+  {
+    "script": "pm2 reload app.js",
+    "label": "PM2重载应用",
+    "folder": "部署/服务管理"
+  },
+  {
+    "script": "pm2 logs",
+    "label": "查看PM2日志",
+    "folder": "部署/服务管理"
+  }
+] 

@@ -25,8 +25,7 @@ Automatically get project commands, display them as a file directory tree, and c
 ![project-commandlist](resources/readme/execute-com.gif)
 
 Configuring the open vscode terminal information, there are currently three configurations available, which temporarily only act on project-Command tabs.
-```
-"commandTool.splitTerminal": {
+```"commandTool.splitTerminal": {
     "description": "Whether split terminals are supported, supported by default",
     "default": true,
 },
@@ -91,4 +90,5 @@ If you feel good, welcome to star🌟, thank you very much 🙏
 MIT
 
 **Happy Coding!**  
+
 

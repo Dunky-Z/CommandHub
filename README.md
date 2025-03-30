@@ -14,6 +14,7 @@
 - 自动获取项目命令，并且用文件目录树形式显示
 - 在项目自定义命令，支持增删改
 - 设定vscode的全局工作空间命令
+- 命令导入导出功能，方便备份和分享命令集
 
 ## Usage
 ### Project-Command(项目命令集) 
@@ -73,6 +74,65 @@ Run Custom Command
 ## Global-Command(全局命令集)
 可以增加自定义命令，会保存在vscode的全局空间，可作用于任意项目使用。
 
+## 命令导入导出功能
+
+CommandTool 提供了强大的命令导入导出功能，方便您备份、恢复和分享命令集。
+
+### 导出命令集
+
+1. 点击工作区命令集或全局命令集标题栏中的导出图标 ![export](resources/dark/export-24px.svg)
+2. 选择保存位置和文件名
+3. 所有命令（包括文件夹结构）将被保存到一个 JSON 文件中
+
+### 导入命令集
+
+1. 点击工作区命令集或全局命令集标题栏中的导入图标 ![import](resources/dark/import-24px.svg)
+2. 选择要导入的 JSON 文件
+3. 所有命令将被导入到当前命令集中
+
+### JSON 文件格式
+
+导入的 JSON 文件必须是一个命令数组，每个命令都是一个包含以下字段的对象：
+
+```json
+[
+  {
+    "script": "命令内容", // 必需字段
+    "label": "命令标签",  // 可选，用于显示的名称
+    "folder": "文件夹路径" // 可选，指定命令所在的文件夹
+  }
+]
+```
+
+#### 文件夹结构
+
+- 不包含 `folder` 字段的命令将被放置在根目录
+- `folder` 字段可以指定单层文件夹：`"folder": "Git命令"`
+- `folder` 字段也可以指定嵌套文件夹：`"folder": "Docker/基础命令"`
+
+示例：
+
+```json
+[
+  {
+    "script": "npm run dev",
+    "label": "启动开发服务器"
+  },
+  {
+    "script": "git add .",
+    "label": "添加所有文件",
+    "folder": "Git命令"
+  },
+  {
+    "script": "docker-compose up -d",
+    "label": "启动容器",
+    "folder": "Docker/基础命令"
+  }
+]
+```
+
+**注意**：导入时会自动创建不存在的文件夹结构。如果导入的命令与现有命令重名，将会覆盖现有命令。
+
 ## Github
 如果觉得好用，欢迎给star🌟，非常感谢🙏
 [https://github.com/dengzhifeng/commandTool](https://github.com/dengzhifeng/commandTool)
@@ -81,5 +141,4 @@ Run Custom Command
 ## License
 MIT
 
-**Happy Coding!**  
-
+**Happy Coding!**  

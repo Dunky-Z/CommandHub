@@ -29,10 +29,11 @@ export default class FileSystemProvider
     // 创建文件事件发射器
     private _onDidChangeFile: vscode.EventEmitter<vscode.FileChangeEvent[]> =
         new vscode.EventEmitter<vscode.FileChangeEvent[]>();
-    // 定义根目录
-    private rootUri: vscode.Uri;
     // 定义视图id
     private viewId: string;
+
+    // 将rootUri改为公开属性，以便 CommandExplorer 可以访问
+    public rootUri: vscode.Uri;
 
     constructor(viewId: string, rootPath: string) {
         this.rootUri = vscode.Uri.file(rootPath);

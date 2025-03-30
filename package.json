@@ -153,6 +153,38 @@
           "light": "resources/light/play_circle_filled-15px.svg",
           "dark": "resources/dark/play_circle_filled-15px.svg"
         }
+      },
+      {
+        "command": "WorkSpace-Command.export",
+        "title": "Export Commands",
+        "icon": {
+          "light": "resources/light/export-24px.svg",
+          "dark": "resources/dark/export-24px.svg"
+        }
+      },
+      {
+        "command": "Global-Command.export",
+        "title": "Export Commands",
+        "icon": {
+          "light": "resources/light/export-24px.svg",
+          "dark": "resources/dark/export-24px.svg"
+        }
+      },
+      {
+        "command": "WorkSpace-Command.import",
+        "title": "Import Commands",
+        "icon": {
+          "light": "resources/light/import-24px.svg",
+          "dark": "resources/dark/import-24px.svg"
+        }
+      },
+      {
+        "command": "Global-Command.import",
+        "title": "Import Commands",
+        "icon": {
+          "light": "resources/light/import-24px.svg",
+          "dark": "resources/dark/import-24px.svg"
+        }
       }
     ],
     "menus": {
@@ -184,6 +216,26 @@
         },
         {
           "command": "Global-Command.addFolder",
+          "when": "view == Global-Command",
+          "group": "navigation"
+        },
+        {
+          "command": "WorkSpace-Command.export",
+          "when": "view == WorkSpace-Command",
+          "group": "navigation"
+        },
+        {
+          "command": "Global-Command.export",
+          "when": "view == Global-Command",
+          "group": "navigation"
+        },
+        {
+          "command": "WorkSpace-Command.import",
+          "when": "view == WorkSpace-Command",
+          "group": "navigation"
+        },
+        {
+          "command": "Global-Command.import",
           "when": "view == Global-Command",
           "group": "navigation"
         }
