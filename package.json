@@ -233,7 +233,7 @@
           "when": "view == WorkSpace-Command && viewItem != file "
         },
         {
-          "command": "WorkSpace-Command.editFolder",
+          "command": "Global-Command.editFolder",
           "when": "view == Global-Command && viewItem != file "
         },
         {

@@ -31,7 +31,7 @@ export class CommandExplorer {
             context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.editFolder`, (element) => treeDataProvider.edit(element)));
             context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.delete`, (element) => {
                     treeDataProvider.delete(element.uri, {recursive: true});
-                    // 删除后就清楚选中 否则会新增文件夹时用回这个已经删除的目录去新增子目录
+                    // 删除后就清除选中 否则会新增文件夹时用回这个已经删除的目录去新增子目录
                     this.selectedFile = undefined;
                 }
             ));
