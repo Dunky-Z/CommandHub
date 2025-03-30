@@ -36,6 +36,7 @@ export default class FileSystemProvider
 
     constructor(viewId: string, rootPath: string) {
         this.rootUri = vscode.Uri.file(rootPath);
+        console.log('this.rootUri:', this.rootUri);
         this.viewId = viewId;
         this.watch(this.rootUri, { recursive: true, excludes: ['.json'] });
     }
@@ -45,21 +46,29 @@ export default class FileSystemProvider
             prompt: `Enter a new command script`
         });
         
+        if (!script) {
+            return; // 用户取消输入时退出
+        }
+        
         const command: Command = {
             script: script,
             label: `label:${script}`,
         };
         let fileName = command.script;
         const sanitizedFilename = sanitizeFilename(<string>fileName).slice(0, 250);
+        console.log('sanitizedFilename:', sanitizedFilename);
         if (selected) {
             const filePath = selected.type === vscode.FileType.Directory ? 
             `${selected.uri.fsPath}/${sanitizedFilename}.json` :
             `${this.getDirectoryPath(selected.uri.fsPath)}/${sanitizedFilename}.json`;
             this._writeFile(filePath, this.stringToUnit8Array(JSON.stringify(command)), 
             {create: true, overwrite: true});
+            console.log('add selected filePath:', filePath);
         } else {
             this._writeFile(`${this.rootUri.fsPath}/${sanitizedFilename}.json`, 
             this.stringToUnit8Array(JSON.stringify(command)), {create: true, overwrite: true});
+            console.log('this.rootUri.fsPath:', `${this.rootUri.fsPath}`);
+            console.log('add filePath:', `${this.rootUri.fsPath}/${sanitizedFilename}.json`);
         }
     }
     addFolder(selected?: Entry) {

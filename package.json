@@ -15,14 +15,13 @@
     "email": "398577351@qq.com"
   },
   "engines": {
-    "vscode": "^1.63.0"
+    "vscode": "^1.84.0"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:commandTool.helloWorld",
-    "onView:SideBar-Command"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {

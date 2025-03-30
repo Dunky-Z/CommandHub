@@ -19,14 +19,37 @@ export default function(context: vscode.ExtensionContext) {
     initProjectCommand(context);
     
     // 自定义目录命令
-    if (context.storageUri?.path) {
-        console.log(context.storageUri.path);
-        new CommandExplorer('WorkSpace-Command', context.storagePath || './', context);
+    if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length === 0) {
+        // 注册一个命令处理程序来显示提示消息
+        context.subscriptions.push(
+            vscode.commands.registerCommand('WorkSpace-Command.add', () => {
+                vscode.window.showInformationMessage('请先打开一个工作区，然后再添加工作区命令。');
+            }),
+            vscode.commands.registerCommand('WorkSpace-Command.addFolder', () => {
+                vscode.window.showInformationMessage('请先打开一个工作区，然后添加文件夹。');
+            }),
+            vscode.commands.registerCommand('WorkSpace-Command.sync', () => {
+                vscode.window.showInformationMessage('请先打开一个工作区，然后再刷新。');
+            }),
+            vscode.commands.registerCommand('WorkSpace-Command.edit', () => {
+                vscode.window.showInformationMessage('请先打开一个工作区，然后再编辑。');
+            }),
+            vscode.commands.registerCommand('WorkSpace-Command.editLabel', () => {
+                vscode.window.showInformationMessage('请先打开一个工作区，然后再编辑标签。');
+            })
+        );
+    } else {
+        // 工作区存在时，正常初始化命令
+        const workspaceStoragePath = context.storageUri ? context.storageUri.fsPath : context.storagePath || './';
+        console.log('WorkSpace storage path:', workspaceStoragePath);
+        new CommandExplorer('WorkSpace-Command', workspaceStoragePath, context);
         new CommandExecuter('workSpaceCommandExecuter', context);
     }
 
     // 全局命令
-    new CommandExplorer('Global-Command', context.globalStoragePath, context);
+    const globalStoragePath = context.globalStorageUri ? context.globalStorageUri.fsPath : context.globalStoragePath || './';
+    console.log('Global storage path:', globalStoragePath);
+    new CommandExplorer('Global-Command', globalStoragePath, context);
     new CommandExecuter('globalCommandExecuter', context);
 };
 
@@ -34,6 +57,7 @@ export default function(context: vscode.ExtensionContext) {
 function initProjectCommand(context: vscode.ExtensionContext) {
     // 得到vscode工作区的工程项目
     const folderList = getWorkSpaceFolders();
+    console.log('folderList:', folderList);
 
     // 注册侧边栏面板
     const sideBar = new SideBarCommand(folderList);

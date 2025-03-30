@@ -20,12 +20,15 @@ export * from './file';
  * @summary 如果发现只有一个根文件夹，读取其子文件夹作为 workspaceFolders
  */
 function getWorkSpaceFolders() {
+    console.log('getWorkSpaceFolders:', vscode?.workspace?.workspaceFolders);
     const folders: FolderType[] = [];
     vscode?.workspace?.workspaceFolders?.forEach((folder: any) => {
         folders.push({
             name: folder.name,
             path: folder.uri.path
         });
+        console.log('folder:', folder.name);
+        console.log('getWorkSpaceFolders:', folder.uri.path);
     });
     return folders;
 }
