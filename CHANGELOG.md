@@ -13,3 +13,7 @@
 ## [1.0.1] - 2025-03-31
 
 - Fix the bug of split terminal
+
+## [1.0.2] - 2025-03-31
+
+- Support remote environment
