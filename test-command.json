@@ -1,0 +1,257 @@
+[
+    {
+      "script": "source /opt/sdk/environment-setup",
+      "label": "初始化交叉编译环境",
+      "folder": "环境设置"
+    },
+    {
+      "script": "export ARCH=arm64 && export CROSS_COMPILE=aarch64-linux-gnu-",
+      "label": "设置ARM64架构环境变量",
+      "folder": "环境设置"
+    },
+    {
+      "script": "export ARCH=arm && export CROSS_COMPILE=arm-linux-gnueabihf-",
+      "label": "设置ARM32架构环境变量",
+      "folder": "环境设置"
+    },
+    {
+      "script": "minicom -D /dev/ttyUSB0 -b 115200",
+      "label": "打开串口控制台",
+      "folder": "串口工具"
+    },
+    {
+      "script": "sudo apt-get install u-boot-tools device-tree-compiler libssl-dev flex bison",
+      "label": "安装U-Boot开发依赖",
+      "folder": "环境设置"
+    },
+    {
+      "script": "git clone https://github.com/u-boot/u-boot.git",
+      "label": "克隆U-Boot源码",
+      "folder": "U-Boot/获取源码"
+    },
+    {
+      "script": "cd u-boot && make distclean",
+      "label": "清理U-Boot构建环境",
+      "folder": "U-Boot/编译命令"
+    },
+    {
+      "script": "cd u-boot && make <board>_defconfig",
+      "label": "配置U-Boot开发板",
+      "folder": "U-Boot/编译命令"
+    },
+    {
+      "script": "cd u-boot && make menuconfig",
+      "label": "U-Boot菜单配置",
+      "folder": "U-Boot/编译命令"
+    },
+    {
+      "script": "cd u-boot && make -j$(nproc)",
+      "label": "编译U-Boot",
+      "folder": "U-Boot/编译命令"
+    },
+    {
+      "script": "sudo dd if=u-boot/u-boot.bin of=/dev/sdX bs=1k seek=8",
+      "label": "烧写U-Boot到SD卡",
+      "folder": "U-Boot/烧录命令"
+    },
+    {
+      "script": "git clone https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git",
+      "label": "克隆Linux内核源码",
+      "folder": "Linux内核/获取源码"
+    },
+    {
+      "script": "cd linux && make mrproper",
+      "label": "清理Linux内核构建环境",
+      "folder": "Linux内核/编译命令"
+    },
+    {
+      "script": "cd linux && make <board>_defconfig",
+      "label": "配置Linux内核",
+      "folder": "Linux内核/编译命令"
+    },
+    {
+      "script": "cd linux && make menuconfig",
+      "label": "Linux内核菜单配置",
+      "folder": "Linux内核/编译命令"
+    },
+    {
+      "script": "cd linux && make -j$(nproc)",
+      "label": "编译Linux内核",
+      "folder": "Linux内核/编译命令"
+    },
+    {
+      "script": "cd linux && make modules -j$(nproc)",
+      "label": "编译Linux内核模块",
+      "folder": "Linux内核/编译命令"
+    },
+    {
+      "script": "cd linux && make dtbs",
+      "label": "编译设备树",
+      "folder": "Linux内核/编译命令"
+    },
+    {
+      "script": "cd linux && sudo make modules_install",
+      "label": "安装内核模块",
+      "folder": "Linux内核/编译命令"
+    },
+    {
+      "script": "cd linux && sudo make install",
+      "label": "安装内核",
+      "folder": "Linux内核/编译命令"
+    },
+    {
+      "script": "cd linux/drivers/mydriver && make",
+      "label": "编译驱动模块",
+      "folder": "驱动开发/编译命令"
+    },
+    {
+      "script": "sudo insmod ./mydriver.ko",
+      "label": "加载驱动模块",
+      "folder": "驱动开发/模块操作"
+    },
+    {
+      "script": "sudo rmmod mydriver",
+      "label": "卸载驱动模块",
+      "folder": "驱动开发/模块操作"
+    },
+    {
+      "script": "dmesg | tail -30",
+      "label": "查看内核日志",
+      "folder": "驱动开发/调试命令"
+    },
+    {
+      "script": "sudo chmod 666 /dev/mydevice",
+      "label": "修改设备权限",
+      "folder": "驱动开发/设备操作"
+    },
+    {
+      "script": "echo 'data' > /dev/mydevice",
+      "label": "写入设备数据",
+      "folder": "驱动开发/设备操作"
+    },
+    {
+      "script": "cat /dev/mydevice",
+      "label": "读取设备数据",
+      "folder": "驱动开发/设备操作"
+    },
+    {
+      "script": "cat /proc/interrupts",
+      "label": "查看中断信息",
+      "folder": "驱动开发/调试命令"
+    },
+    {
+      "script": "cat /proc/meminfo",
+      "label": "查看内存信息",
+      "folder": "驱动开发/调试命令"
+    },
+    {
+      "script": "cat /proc/iomem",
+      "label": "查看IO内存映射",
+      "folder": "驱动开发/调试命令"
+    },
+    {
+      "script": "sudo dtc -I dts -O dtb -o device.dtb device.dts",
+      "label": "编译DTS为DTB",
+      "folder": "设备树/操作命令"
+    },
+    {
+      "script": "sudo dtc -I dtb -O dts -o device.dts device.dtb",
+      "label": "反编译DTB为DTS",
+      "folder": "设备树/操作命令"
+    },
+    {
+      "script": "cd u-boot && ./tools/mkimage -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n 'Linux' -d ../linux/arch/arm/boot/zImage uImage",
+      "label": "制作内核uImage",
+      "folder": "U-Boot/镜像命令"
+    },
+    {
+      "script": "sudo apt-get install flex bison libncurses5-dev libelf-dev libssl-dev",
+      "label": "安装内核编译依赖",
+      "folder": "环境设置"
+    },
+    {
+      "script": "cd buildroot && make menuconfig",
+      "label": "Buildroot配置",
+      "folder": "根文件系统/构建命令"
+    },
+    {
+      "script": "cd buildroot && make -j$(nproc)",
+      "label": "编译Buildroot",
+      "folder": "根文件系统/构建命令"
+    },
+    {
+      "script": "sudo dd if=buildroot/output/images/rootfs.ext4 of=/dev/sdX2",
+      "label": "烧写根文件系统到SD卡",
+      "folder": "根文件系统/烧录命令"
+    },
+    {
+      "script": "sudo mkfs.ext4 /dev/sdX2",
+      "label": "格式化SD卡分区",
+      "folder": "根文件系统/烧录命令"
+    },
+    {
+      "script": "arm-none-eabi-gdb",
+      "label": "启动GDB调试",
+      "folder": "调试工具/GDB"
+    },
+    {
+      "script": "sudo openocd -f interface/stlink.cfg -f target/stm32f4x.cfg",
+      "label": "启动OpenOCD",
+      "folder": "调试工具/OpenOCD"
+    },
+    {
+      "script": "cd linux/drivers/char && grep -r 'init_module' --include='*.c' .",
+      "label": "搜索模块初始化函数",
+      "folder": "驱动开发/代码分析"
+    },
+    {
+      "script": "find linux/drivers -name '*.c' -exec grep -l 'platform_driver' {} \\;",
+      "label": "查找平台驱动示例",
+      "folder": "驱动开发/代码分析"
+    },
+    {
+      "script": "git checkout -b mydriver origin/master",
+      "label": "创建驱动开发分支",
+      "folder": "驱动开发/版本控制"
+    },
+    {
+      "script": "cscope -Rbkq",
+      "label": "生成代码索引",
+      "folder": "驱动开发/代码分析"
+    },
+    {
+      "script": "bear -- make",
+      "label": "生成编译数据库",
+      "folder": "驱动开发/代码分析"
+    },
+    {
+      "script": "sudo flashcp -v u-boot.bin /dev/mtd0",
+      "label": "烧写U-Boot到Flash",
+      "folder": "U-Boot/烧录命令"
+    },
+    {
+      "script": "sudo kexec -l ./linux/arch/arm/boot/zImage --dtb=./linux/arch/arm/boot/dts/board.dtb --reuse-cmdline",
+      "label": "准备热加载内核",
+      "folder": "Linux内核/调试命令"
+    },
+    {
+      "script": "sudo kexec -e",
+      "label": "执行热加载内核",
+      "folder": "Linux内核/调试命令"
+    },
+    {
+      "script": "strace -p PID",
+      "label": "跟踪进程系统调用",
+      "folder": "驱动开发/调试命令"
+    },
+    {
+      "script": "lsmod | grep mydriver",
+      "label": "检查模块是否加载",
+      "folder": "驱动开发/模块操作"
+    },
+    {
+      "script": "modinfo mydriver.ko",
+      "label": "查看模块信息",
+      "folder": "驱动开发/模块操作"
+    }
+  ]
