@@ -2,8 +2,8 @@
   "name": "CommandHub",
   "displayName": "CommandHub",
   "description": "这是一个终端命令管理工具 (This is a terminal command management tool)",
-  "version": "1.0.0",
-  "publisher": "Dominic Zhang",
+  "version": "1.0.1",
+  "publisher": "DominicZhang",
   "author": {
     "name": "Dominic Zhang",
     "email": "zh254758318@gmail.com"
@@ -319,16 +319,16 @@
       "command-list-view": [
         {
           "id": "SideBar-Command",
-          "name": "Project-Command(项目命令集)"
+          "name": "Project-Command"
         },
         {
           "id": "WorkSpace-Command",
-          "name": "WorkSpace-Command(工作区命令集)",
+          "name": "WorkSpace-Command",
           "dragAndDropController": true
         },
         {
           "id": "Global-Command",
-          "name": "Global-Command(全局命令集)",
+          "name": "Global-Command",
           "dragAndDropController": true
         }
       ]
@@ -336,7 +336,7 @@
     "viewsWelcome": [
       {
         "view": "SideBar-Command",
-        "contents": "暂未检索到项目命令"
+        "contents": "No project commands found"
       }
     ],
     "configuration": {
@@ -344,19 +344,19 @@
       "properties": {
         "CommandHub.splitTerminal": {
           "type": "boolean",
-          "description": "是否支持分割终端，默认支持",
+          "description": "Whether to support split terminals, default support",
           "default": true,
           "scope": "window"
         },
         "CommandHub.autoRunTerminal": {
           "type": "boolean",
-          "description": "是否自动运行脚本，默认自动运行",
+          "description": "Whether to automatically run the script, default to run",
           "default": true,
           "scope": "window"
         },
         "CommandHub.TreeItemCollapsibleState": {
           "type": "boolean",
-          "description": "是否折叠命令列表",
+          "description": "Whether to collapse the command list",
           "default": false,
           "scope": "window"
         }

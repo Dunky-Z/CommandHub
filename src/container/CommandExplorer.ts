@@ -63,8 +63,8 @@ export class CommandExplorer {
             // 获取保存路径
             const saveUri = await vscode.window.showSaveDialog({
                 filters: { 'JSON': ['json'] },
-                saveLabel: '导出命令集',
-                title: '选择导出文件保存位置'
+                saveLabel: 'Export Command Set',
+                title: 'Select the location to save the exported command set'
             });
             
             if (!saveUri) {
@@ -77,10 +77,10 @@ export class CommandExplorer {
             // 写入文件
             fs.writeFileSync(saveUri.fsPath, JSON.stringify(commandsData, null, 2), 'utf8');
             
-            vscode.window.showInformationMessage(`命令集已成功导出到: ${saveUri.fsPath}`);
+            vscode.window.showInformationMessage(`Command set exported successfully to: ${saveUri.fsPath}`);
         } catch (error) {
-            vscode.window.showErrorMessage(`导出命令集失败: ${error}`);
-            console.error('导出命令集错误:', error);
+            vscode.window.showErrorMessage(`Failed to export command set: ${error}`);
+            console.error('Error exporting command set:', error);
         }
     }
     
@@ -124,8 +124,8 @@ export class CommandExplorer {
             const fileUris = await vscode.window.showOpenDialog({
                 canSelectMany: false,
                 filters: { 'JSON': ['json'] },
-                openLabel: '导入命令集',
-                title: '选择要导入的命令集JSON文件'
+                openLabel: 'Import Command Set',
+                title: 'Select the JSON file of the command set to import'
             });
             
             if (!fileUris || fileUris.length === 0) {
@@ -136,7 +136,7 @@ export class CommandExplorer {
             const commandsData = JSON.parse(fileContent);
             
             if (!Array.isArray(commandsData)) {
-                throw new Error('无效的命令集文件格式');
+                throw new Error('Invalid command set file format');
             }
             
             // 导入命令
@@ -149,10 +149,10 @@ export class CommandExplorer {
             // 刷新视图
             treeDataProvider.refresh();
             
-            vscode.window.showInformationMessage(`成功导入 ${importCount} 个命令`);
+            vscode.window.showInformationMessage(`Successfully imported ${importCount} commands`);
         } catch (error) {
-            vscode.window.showErrorMessage(`导入命令集失败: ${error}`);
-            console.error('导入命令集错误:', error);
+            vscode.window.showErrorMessage(`Failed to import command set: ${error}`);
+            console.error('Error importing command set:', error);
         }
     }
     
@@ -160,7 +160,7 @@ export class CommandExplorer {
     private async importSingleCommand(treeDataProvider: FileSystemProvider, command: any): Promise<void> {
         // 检查必要字段
         if (!command.script) {
-            console.warn('跳过无效命令:', command);
+            console.warn('Skipping invalid command:', command);
             return;
         }
         

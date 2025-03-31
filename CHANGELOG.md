@@ -1,11 +1,15 @@
 # Change Log
 
 
-## [1.0.0] - 2025-03-31
+## [1.0.0] - 2025-03-30
 ###  Initial release
 
-- 添加命令导入导出功能
-- 添加命令执行功能
-- 添加命令编辑功能
-- 添加命令删除功能
-- 添加命令复制功能
+- Add command import and export function
+- Add command execution function
+- Add command edit function
+- Add command delete function
+- Add command copy function
+
+## [1.0.1] - 2025-03-31
+
+- Fix the bug of split terminal

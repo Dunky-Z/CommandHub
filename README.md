@@ -4,6 +4,8 @@
 
 该插件可以让你快速执行终端命令。
 
+![](https://picbed-1311007548.cos.ap-shanghai.myqcloud.com/markdown_picbed/img//2025/03/31/3659e057e7ec6690984d657772667f82.gif)
+
 ## 功能
 
 - 一键运行命令

@@ -4,6 +4,8 @@
 
 This plugin allows you to quickly execute terminal commands.
 
+![](https://picbed-1311007548.cos.ap-shanghai.myqcloud.com/markdown_picbed/img//2025/03/31/3659e057e7ec6690984d657772667f82.gif)
+
 ## Features
 
 - One-click command execution

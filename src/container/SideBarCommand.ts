@@ -14,6 +14,7 @@ export default class SideBarCommand extends SideBarEntryListImplements {
     }
     // 获取子树方式
     async getChildren(element?: SideBarEntryItem): Promise<SideBarEntryItem[] | null | undefined> {
+        console.log('SideBarCommand.getChildren called for:', element);
         if (element) {
             let childElement:any = [];
             const packJsonPath = `${element.path}/package.json`;
@@ -68,6 +69,20 @@ export default class SideBarCommand extends SideBarEntryListImplements {
             }) || [];
             return folderNode;
         }
+    }
+
+    getTreeItem(element: any): vscode.TreeItem {
+        console.log('SideBarCommand.getTreeItem called for:', element);
+        let node = new SideBarEntryItem(
+            element.title,
+            vscode.TreeItemCollapsibleState.None, // 不折叠
+            element.path, // Todo
+            element.projectName,
+            element.description,
+            element.shell,
+            element.contextValue
+        );
+        return node;
     }
 }
 

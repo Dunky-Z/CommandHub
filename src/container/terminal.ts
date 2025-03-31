@@ -17,45 +17,45 @@ let terminalIndex: number;
 export async function dealTerminal(context: vscode.ExtensionContext, args: { title: string; shell: ShellType; [key: string]: any }) {
         const { label, shell = null, path, projectName } = args;
         const reg = new RegExp(PREFIX);
+        console.log('label:', label);
         if (reg.test(label)) {
             vscode.window.showErrorMessage(label);
         } else {
             // 获取用户配置是否分割终端设置
             const splitTerminal = vscode.workspace.getConfiguration().get('CommandHub.splitTerminal') || false;
+            console.log('splitTerminal:', splitTerminal);
             // 获取用户配置的是否自动运行脚本
             const autoRunTerminal: boolean = vscode.workspace.getConfiguration().get('CommandHub.autoRunTerminal') || false;
 
-            // 填充脚本、支持分配、自动运行脚本、多项目终端切换
-            // 1.1 获取当前所以运行的终端数量
-            const uniqTerminals = uniqBy(terminals, 'terminalName');
-            // 1.2 尝试获取当前点击的项目脚本是否存在终端实例
-            const currentProjectTerminal = uniqTerminals.find((t) => {
-                return t.terminalName === projectName;
-            });
-            // 1.3 如果当前的项目脚本并不存在终端实例，新增
-            if (!currentProjectTerminal) {
+            // splitTerminal=true: 每次在新的终端标签页执行
+            // splitTerminal=false: 始终在同一个终端标签页执行
+            if (splitTerminal) {
+                // 总是创建新的终端标签页
+                console.log('创建新终端...');
                 addTerminal(path, projectName, shell, autoRunTerminal);
-            } 
-
-            // 1.4 当前项目脚本存在终端实例
-            if (currentProjectTerminal) {
-                // 1.4.1 用户设置不需要分屏, 则新增
-                if (!splitTerminal) {
+            } else {
+                // 查找是否有任何终端存在
+                if (terminals.length === 0) {
+                    // 没有终端，创建一个
+                    console.log('没有终端，创建新终端...');
                     addTerminal(path, projectName, shell, autoRunTerminal);
                 } else {
-                    // 分屏
-                    currentProjectTerminal?.show(); //  先展开当前的终端
-                    await createNewSplitTerminal(terminalCount++, {
-                        terminalCwd: getPathHack(path),
-                        terminalName: projectName,
-                        terminalText: `npm run ${shell?.key}`,
-                        terminalAutoInputText: true,
-                        terminalAutoRun: autoRunTerminal,
-                    });
+                    // 使用第一个终端
+                    console.log('使用已有终端...');
+                    const firstTerminal = terminals[0];
+                    firstTerminal.show();
+                    
+                    // 直接发送命令到终端
+                    if (shell) {
+                        const command = shell.value || '';
+                        console.log('执行命令:', command);
+                        // 调用show方法确保终端可见，然后使用VS Code API发送命令
+                        if (vscode.window.activeTerminal) {
+                            vscode.window.activeTerminal.sendText(command, autoRunTerminal);
+                        }
+                    }
                 }
             }
-            // vscode.commands.registerCommand是注册命令的API，执行后会返回一个Disposable对象，
-            // 所有注册类的API执行后都需要将返回结果放到context.subscriptions中去。
 
             // 订阅关闭终端方法
             context.subscriptions.push(vscode.window.onDidCloseTerminal(onDidCloseTerminal));
@@ -68,7 +68,7 @@ function addTerminal(path: string, projectName: any, shell: ShellType | null, au
         new StatusBarTerminal(terminalCount++, {
             terminalCwd: getPathHack(path),
             terminalName: projectName,
-            terminalText: `npm run ${shell?.key}`,
+            terminalText: shell?.value || '',  // 使用完整命令，而不是npm run
             terminalAutoInputText: true,
             terminalAutoRun: autoRunTerminal
         })

@@ -16,19 +16,19 @@ export default function(context: vscode.ExtensionContext) {
         // 注册一个命令处理程序来显示提示消息
         context.subscriptions.push(
             vscode.commands.registerCommand('WorkSpace-Command.add', () => {
-                vscode.window.showInformationMessage('请先打开一个工作区，然后再添加工作区命令。');
+                vscode.window.showInformationMessage('Please open a workspace first, then add workspace commands.');
             }),
             vscode.commands.registerCommand('WorkSpace-Command.addFolder', () => {
-                vscode.window.showInformationMessage('请先打开一个工作区，然后添加文件夹。');
+                vscode.window.showInformationMessage('Please open a workspace first, then add a folder.');
             }),
             vscode.commands.registerCommand('WorkSpace-Command.sync', () => {
-                vscode.window.showInformationMessage('请先打开一个工作区，然后再刷新。');
+                vscode.window.showInformationMessage('Please open a workspace first, then refresh.');
             }),
             vscode.commands.registerCommand('WorkSpace-Command.edit', () => {
-                vscode.window.showInformationMessage('请先打开一个工作区，然后再编辑。');
+                vscode.window.showInformationMessage('Please open a workspace first, then edit.');
             }),
             vscode.commands.registerCommand('WorkSpace-Command.editLabel', () => {
-                vscode.window.showInformationMessage('请先打开一个工作区，然后再编辑标签。');
+                vscode.window.showInformationMessage('Please open a workspace first, then edit the label.');
             })
         );
     } else {
@@ -69,6 +69,7 @@ function initProjectCommand(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(
         `${viewId}.openChild`, 
         (args: { title: string; shell: ShellType; [key: string]: any }) => { 
+            console.log('SideBar-Command.openChild 被触发:', args);
             dealTerminal(context, args);
         }
     ));
@@ -76,7 +77,7 @@ function initProjectCommand(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(`${viewId}.copy`, (node) => { 
         const shell = node.shell.value;
         copyToClipboard(shell, () => {
-            vscode.window.showInformationMessage(`已经复制命令${shell}到剪切板`);
+            vscode.window.showInformationMessage(`Command ${shell} has been copied to the clipboard`);
         });
     }));
 }

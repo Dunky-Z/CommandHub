@@ -45,7 +45,7 @@ export default class FileSystemProvider
         try {
             await this.loadFolderSortOrder(this.rootUri.fsPath);
         } catch (e) {
-            console.error('加载排序信息失败:', e);
+            console.error('Failed to load sort orders:', e);
         }
     }
     
@@ -61,7 +61,7 @@ export default class FileSystemProvider
                     this.sortOrderMap.set(folderPath, order);
                 }
             } catch (e) {
-                console.error(`读取排序文件失败: ${orderFilePath}`, e);
+                console.error(`Failed to read sort file: ${orderFilePath}`, e);
             }
         }
         
@@ -76,7 +76,7 @@ export default class FileSystemProvider
                 }
             }
         } catch (e) {
-            console.error(`读取目录失败: ${folderPath}`, e);
+            console.error(`Failed to read directory: ${folderPath}`, e);
         }
     }
     
@@ -90,7 +90,7 @@ export default class FileSystemProvider
             console.log('saveSortOrder:', items);
             console.log('folderPath:', folderPath);
         } catch (e) {
-            console.error(`保存排序信息失败: ${folderPath}`, e);
+            console.error(`Failed to save sort order: ${folderPath}`, e);
         }
     }
     
@@ -192,7 +192,7 @@ export default class FileSystemProvider
         if (element && element.type === vscode.FileType.File) { 
             const file: Command = JSON.parse(fs.readFileSync(element.uri.fsPath, 'utf8'));
             copyToClipboard(file.script, () => {
-                vscode.window.showInformationMessage(`已经复制命令${file.script}到剪切板`);
+                vscode.window.showInformationMessage(`Command ${file.script} has been copied to the clipboard`);
             });
         }
     }
@@ -516,7 +516,7 @@ export default class FileSystemProvider
     
     // 处理拖动操作开始
     public handleDrag(source: readonly Entry[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): void {
-        console.log('开始拖动操作', source);
+        console.log('Starting drag operation', source);
         
         // 使用字符串而不是对象，避免序列化问题
         const sourcePaths = source.map(entry => ({
@@ -530,21 +530,21 @@ export default class FileSystemProvider
     
     // 处理放置操作
     public async handleDrop(target: Entry | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): Promise<void> {
-        console.log('处理放置操作', target ? target.uri.fsPath : 'root');
+        console.log('Handling drop operation', target ? target.uri.fsPath : 'root');
         
         const transferItem = dataTransfer.get('application/vnd.code.tree.CommandHub');
         if (!transferItem) {
-            console.log('没有找到传输项');
+            console.log('No transfer item found');
             return;
         }
         
         try {
             // 从JSON字符串恢复
             const sourcePaths = JSON.parse(transferItem.value as string);
-            console.log('解析传输项内容', sourcePaths);
+            console.log('Parsing transfer item content', sourcePaths);
             
             if (!sourcePaths || sourcePaths.length === 0 || token.isCancellationRequested) {
-                console.log('源为空或操作已取消');
+                console.log('Source is empty or operation cancelled');
                 return;
             }
             
@@ -559,14 +559,14 @@ export default class FileSystemProvider
             // 刷新视图以显示变更
             this.refresh();
         } catch (e) {
-            console.error('拖放错误:', e);
-            vscode.window.showErrorMessage(`拖放操作失败: ${e}`);
+            console.error('Drop error:', e);
+            vscode.window.showErrorMessage(`Drop operation failed: ${e}`);
         }
     }
     
     // 处理文件系统拖放操作
     private async handleFileSystemDrop(sources: Entry[], target: Entry | undefined): Promise<void> {
-        console.log('处理文件系统拖放:', sources, target ? target.uri.fsPath : 'root');
+        console.log('Handling file system drop:', sources, target ? target.uri.fsPath : 'root');
         
         // 确定目标目录
         const targetDir = !target ? this.rootUri.fsPath : 
@@ -646,8 +646,8 @@ export default class FileSystemProvider
                     newOrder.push(fileName);
                 }
                 
-                console.log('排序更新:', fileName, '移到', targetFileName, '之前');
-                console.log('新排序:', newOrder);
+                console.log('Sort updated:', fileName, 'moved to', targetFileName, 'before');
+                console.log('New sort:', newOrder);
             }
         }
         
