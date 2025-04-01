@@ -26,6 +26,11 @@ export async function dealTerminal(context: vscode.ExtensionContext, args: { tit
             console.log('splitTerminal:', splitTerminal);
             // 获取用户配置的是否自动运行脚本
             const autoRunTerminal: boolean = vscode.workspace.getConfiguration().get('CommandHub.autoRunTerminal') || false;
+            // 获取用户配置的是否保持当前活动终端（对串口终端很有用）
+            const keepActiveTerminal: boolean = vscode.workspace.getConfiguration().get('CommandHub.keepActiveTerminal') || false;
+            
+            // 保存当前活动终端的引用
+            const currentActiveTerminal = vscode.window.activeTerminal;
 
             // splitTerminal=true: 每次在新的终端标签页执行
             // splitTerminal=false: 始终在同一个终端标签页执行
@@ -34,26 +39,21 @@ export async function dealTerminal(context: vscode.ExtensionContext, args: { tit
                 console.log('创建新终端...');
                 addTerminal(path, projectName, shell, autoRunTerminal);
             } else {
-                // 查找是否有任何终端存在
-                if (terminals.length === 0) {
-                    // 没有终端，创建一个
-                    console.log('没有终端，创建新终端...');
-                    addTerminal(path, projectName, shell, autoRunTerminal);
-                } else {
-                    // 使用第一个终端
-                    console.log('使用已有终端...');
-                    const firstTerminal = terminals[0];
-                    firstTerminal.show();
-                    
-                    // 直接发送命令到终端
+                // 获取当前活动的终端
+                const activeTerminal = vscode.window.activeTerminal;
+                
+                if (activeTerminal) {
+                    // 如果有活动终端，直接在当前终端执行命令
+                    console.log('在当前活动终端执行命令...');
                     if (shell) {
                         const command = shell.value || '';
                         console.log('执行命令:', command);
-                        // 调用show方法确保终端可见，然后使用VS Code API发送命令
-                        if (vscode.window.activeTerminal) {
-                            vscode.window.activeTerminal.sendText(command, autoRunTerminal);
-                        }
+                        activeTerminal.sendText(command, autoRunTerminal);
                     }
+                } else {
+                    // 没有活动终端，创建一个新终端
+                    console.log('没有活动终端，创建新终端...');
+                    addTerminal(path, projectName, shell, autoRunTerminal);
                 }
             }
 

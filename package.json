@@ -358,6 +358,12 @@
           "default": true,
           "scope": "window"
         },
+        "CommandHub.keepActiveTerminal": {
+          "type": "boolean",
+          "description": "Keep current active terminal when executing commands (useful for serial ports)",
+          "default": false,
+          "scope": "window"
+        },
         "CommandHub.TreeItemCollapsibleState": {
           "type": "boolean",
           "description": "Whether to collapse the command list",
