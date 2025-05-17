@@ -17,3 +17,12 @@
 ## [1.0.2] - 2025-03-31
 
 - Support remote environment
+
+## [1.0.3] - 2025-04-02
+
+- Fix the bug of terminal
+
+## [1.0.4] - 2025-05-17
+
+- Fix the bug of import and export command set in remote environment
+

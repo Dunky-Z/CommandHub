@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { FolderType } from '../type/common';
 import * as os from 'os';
 import * as fs from 'fs';
+import * as path from 'path';
 
 import * as cp from 'child_process';
 import { ExecException}  from 'child_process';
@@ -109,6 +110,42 @@ function macCopy(data: any) {
     const proc = cp.spawn("pbcopy");
     proc.stdin.write(data);
     proc.stdin.end();
+}
+
+/**
+ * @description 规范化路径，确保在不同系统上使用正确的路径分隔符
+ * @param filePath 需要规范化的路径
+ * @returns 规范化后的路径
+ */
+export function normalizePath(filePath: string): string {
+    if (!filePath) {
+        return filePath;
+    }
+    
+    // 将Windows风格路径转换为POSIX风格
+    let normalized = filePath.replace(/\\/g, '/');
+    
+    // 处理Windows驱动器前缀 (如 C:/)
+    if (/^[a-zA-Z]:\//.test(normalized)) {
+        // 在Linux下保留驱动器前缀但不使用它（WSL访问Windows文件系统的特殊情况）
+        if (process.platform !== 'win32') {
+            console.log('Detected Windows drive prefix on Linux:', normalized);
+        }
+    }
+    
+    // 确保不以多余的斜杠开头 (除了第一个)
+    normalized = normalized.replace(/^\/+/, '/');
+    
+    console.log(`Path normalized: "${filePath}" -> "${normalized}"`);
+    return normalized;
+}
+
+export function isAbsolutePath(filePath: string): boolean {
+    return path.isAbsolute(filePath);
+}
+
+export function resolveFilePath(basePath: string, relativePath: string): string {
+    return path.resolve(basePath, relativePath);
 }
 
 export { getWorkSpaceFolders, getPathHack, trim, uniqBy, copyToClipboard, isWinOS };

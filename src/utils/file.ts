@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as path from 'path';
+
 // 使用require代替import
 const mkdirp = require('mkdirp');
 const rimraf = require('rimraf');
@@ -121,5 +123,18 @@ export namespace _ {
         return new Promise<void>((resolve, reject) => {
             fs.writeFile(path, content, error => handleResult(resolve, reject, error, void 0));
         });
+    }
+    
+    export function getPortablePath(filePath: string): string {
+        return path.normalize(filePath);
+    }
+
+    export function ensureDirectoryExistence(filePath: string): void {
+        const dirname = path.dirname(filePath);
+        if (fs.existsSync(dirname)) {
+            return;
+        }
+        ensureDirectoryExistence(dirname);
+        fs.mkdirSync(dirname);
     }
 }
